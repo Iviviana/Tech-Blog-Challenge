@@ -1,9 +1,7 @@
-const router=require('express').Router();
-const {Comment}=require('../../models');
-//middleware
-const withAuth=require('../../utils/auth');
+const router = require('express').Router();
+const { Comment } = require('../../models');
+const withAuth = require('../../utils/auth');
 
-//Get a comment
 router.get('/', (req, res) => {
     Comment.findAll({})
         .then(dbCommentData => res.json(dbCommentData))

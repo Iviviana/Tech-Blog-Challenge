@@ -1,7 +1,5 @@
-const router=require('express').Router();
-const sequelize=require('sequelize');
-const {User,Comment, Post}=require('../../models');
-const withAuth=require('../../utils/auth');
+const router = require('express').Router();
+const { User, Post, Comment } = require('../../models');
 
 router.get('/', (req, res) => {
     User.findAll({
@@ -163,4 +161,3 @@ router.delete('/:id', (req, res) => {
 });
 
 module.exports = router;
-

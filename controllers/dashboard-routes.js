@@ -1,10 +1,7 @@
-const router=require('express').Router();
-const sequelize=require('../config/connection');
-const {Post, Comment, User}=require('../models');
-//import middleware
-const withAuth=require('../utils/auth');
-
-//Get a post
+const router = require('express').Router();
+const sequelize = require('../config/connection');
+const { Post, User, Comment } = require('../models');
+const withAuth = require('../utils/auth');
 router.get('/', withAuth, (req, res) => {
     Post.findAll({
             where: {
