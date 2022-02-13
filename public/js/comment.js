@@ -1,33 +1,32 @@
-async function commentHandler(event) {
+async function commentFormHandler(event) {
     event.preventDefault();
 
-    const comment_text=document.querySelector('input[name="comment-body"]').value.trim();
+    const comment_text = document.querySelector('input[name="comment-body"]').value.trim();
 
-    const post_id=window.location.toString().split('/')[
-        window.location.toString().split('/').length-1
+    const post_id = window.location.toString().split('/')[
+        window.location.toString().split('/').length - 1
     ];
 
-    if(comment_text) {
-        const response=await fetch('/api/comments', {
+    if (comment_text) {
+        const response = await fetch('/api/comments', {
             method: 'POST',
-            body:JSON.stringify({
+            body: JSON.stringify({
                 post_id,
                 comment_text
             }),
-            headers:{
+            headers: {
                 'Content-Type': 'application/json'
             }
         });
 
-        if(response.ok) {
+        if (response.ok) {
             document.location.reload();
-        } else{
+
+        } else {
             alert(response.statusText);
-            
-            document.querySelector('#comment-form').getElementsByClassName.display="block";
-            
+            document.querySelector('#comment-form').style.display = "block";
         }
     }
 }
 
-document.querySelector('.comment-form').addEventListener('submit',commentHandler);
+document.querySelector('.comment-form').addEventListener('submit', commentFormHandler);
