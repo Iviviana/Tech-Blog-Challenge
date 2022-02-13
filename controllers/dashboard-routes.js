@@ -5,10 +5,9 @@ const {Post, Comment, User}=require('../models');
 const withAuth=require('../utils/auth');
 
 //Get a post
-router.get('/', async(req,res)=>{
-    try {
-        const dbPost=await Post.findAll({
-            where:{
+router.get('/', withAuth, (req, res) => {
+    Post.findAll({
+            where: {
                 user_id: req.session.user_id
             },
             attributes: [
@@ -17,67 +16,71 @@ router.get('/', async(req,res)=>{
                 'content',
                 'created_at'
             ],
-            include:[{
-                model: Comment,
-                attributes:['id', 'comment_text', 'post_id','user_id','created_at'],
-                include: {
-                    model:User,
-                    attributes:['username']
+            include: [{
+                    model: Comment,
+                    attributes: ['id', 'comment_text', 'post_id', 'user_id', 'created_at'],
+                    include: {
+                        model: User,
+                        attributes: ['username']
+                    }
+                },
+                {
+                    model: User,
+                    attributes: ['username']
                 }
-            },{
-                model:User,
-                attributes:['username']
-            }]
+            ]
+        })
+        .then(dbPostData => {
+            const posts = dbPostData.map(post => post.get({ plain: true }));
+            res.render('dashboard', { posts, loggedIn: true });
+        })
+        .catch(err => {
+            console.log(err);
+            res.status(500).json(err);
         });
-        const posts=dbPost.map((post)=>post.get({plain:true}));
-        res.render('dashboard',{
-            posts,
-            loggedIn: req.session.loggedIn
-        });
-    } catch(err) {
-        console.log(err);
-        res.status(500).json(err);
-    }
 });
-
-router.get('/edit/:id',withAuth,(req,res)=>{
+router.get('/edit/:id', withAuth, (req, res) => {
     Post.findOne({
-        where:{
-            id:req.params.id
-        },
-        attributes: [
-            'id',
-            'title',
-            'content',
-            'created_at'
-        ],
-        include: [{
-            model: User,
-            attributes:['username']
-        },{
-            model: Comment,
-            attributes: ['id', 'comment_text', 'post_id', 'user_id', 'created_at'],
-            include: {
-                model: User,
-                attributes: ['username']
+            where: {
+                id: req.params.id
+            },
+            attributes: ['id',
+                'title',
+                'content',
+                'created_at'
+            ],
+            include: [{
+                    model: User,
+                    attributes: ['username']
+                },
+                {
+                    model: Comment,
+                    attributes: ['id', 'comment_text', 'post_id', 'user_id', 'created_at'],
+                    include: {
+                        model: User,
+                        attributes: ['username']
+                    }
+                }
+            ]
+        })
+        .then(dbPostData => {
+            if (!dbPostData) {
+                res.status(404).json({ message: 'No post found with this id' });
+                return;
             }
-        }]
-    }).then(dbPost=> {
-        if(!dbPost) {
-            res.status(404).json({ message: 'No posts found'});
-            return;
-        }
-        const posts=dbPost.get({plain: true});
-        res.render('edit-post', {post, loggedIn: true});
-    }).catch(err=>{
-        console.log(err);
-        res.status(500).json(err);
-    });
-    
-});
 
-router.get('/new',(req,res)=>{
+            const post = dbPostData.get({ plain: true });
+            res.render('edit-post', { post, loggedIn: true });
+        })
+        .catch(err => {
+            console.log(err);
+            res.status(500).json(err);
+        });
+})
+router.get('/new', (req, res) => {
     res.render('new-post');
 });
 
-module.exports=router;
+
+
+module.exports = router;
