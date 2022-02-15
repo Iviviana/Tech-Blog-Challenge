@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "serve -s build",
+    "dev": "react-scripts start",
+    "start": "npm start",
     "test": "echo \"Error: no test specified\" && exit 1",
     "eject": "react-scripts eject",
     "heroku-postbuild": "npm run build"
